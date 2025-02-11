@@ -524,45 +524,17 @@ ll coinChange(int coin, vector<int> coins, int i, vector<vector<int>> &dp)
 int main()
 {
 
-    // freopen("in.txt", "r", stdin);
-    // freopen("out.txt", "w", stdout);
+    freopen("in.txt", "r", stdin);
+    freopen("out.txt", "w", stdout);
     int q;
     cin >> q;
     while (q--)
     {
-        int n;
-        cin >> n;
-        map<pair<int, int>, int> freq;
-        vector<int> a(n);
-        vector<int> b(n);
-        bool isPossible = false;
-        for (int i = 0; i < n; i++)
-            cin >> a[i];
-        for (int i = 0; i < n; i++)
-            cin >> b[i];
-        for (int i = 0; i < n; i++)
-        {
-            if (freq.size() == 3)
-                isPossible = true;
-            if (!freq[{a[i], b[i]}])
-                freq[{a[i], b[i]}]++;
-            else
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    if (!freq[{a[i], b[j]}])
-                    {
-                        freq[{a[i], b[j]}]++;
-                        break;
-                    }
-                }
-            }
-        }
-        if (isPossible)
-            cout << "yes";
-        else
-            cout << "no";
-        cout << endl;
+        string str;
+        cin >> str;
+        str[str.size() - 1] = '\n';
+        str[str.size() - 2] = 'i';
+        cout << str;
     }
 
     return 0;
