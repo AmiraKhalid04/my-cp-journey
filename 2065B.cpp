@@ -532,9 +532,23 @@ int main()
     {
         string str;
         cin >> str;
-        str[str.size() - 1] = '\n';
-        str[str.size() - 2] = 'i';
-        cout << str;
+        int prev = str.size();
+        while (prev--)
+        {
+            for (int i = 0; i < str.size(); i++)
+            {
+                if (i != str.size())
+                    if (str[i] == str[i + 1])
+                    {
+                        if (i != str.size() - 2)
+                            str[i] = str[i + 2];
+                        else if (i)
+                            str[i] = str[i - 1];
+                        str.erase(str.begin() + i + 1);
+                    }
+            }
+        }
+        cout << str.size() << endl;
     }
 
     return 0;
