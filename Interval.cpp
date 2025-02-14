@@ -524,33 +524,33 @@ ll coinChange(int coin, vector<int> coins, int i, vector<vector<int>> &dp)
 int main()
 {
 
-    // freopen("in.txt", "r", stdin);
-    // freopen("out.txt", "w", stdout);
+    freopen("in.txt", "r", stdin);
+    freopen("out.txt", "w", stdout);
     int q;
     cin >> q;
     while (q--)
     {
         int n;
         cin >> n;
-        vector<int> v;
+        vector<int> v(n);
+        bool okay = 1;
         for (int i = 0; i < n; i++)
         {
-            int ctr = 1;
-            string s;
-            cin >> s;
-            for (int i = 0; i < s.size(); i++)
+            cin >> v[i];
+            if (i)
             {
-
-                if (s[i] == '#')
-                    v.push_back(ctr);
+                if (abs(v[i] - v[i - 1]) == 5 || abs(v[i] - v[i - 1]) == 7)
+                {
+                }
                 else
-                    ctr++;
+                    okay = 0;
             }
         }
-        for (int i = v.size() - 1; i >= 0; i--)
-            cout << v[i] << " ";
+        if (okay)
+            cout << "yes";
+        else
+            cout << "no";
         cout << endl;
     }
-
     return 0;
 }
