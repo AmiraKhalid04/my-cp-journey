@@ -15,10 +15,6 @@ using namespace std;
 #include <bitset>
 #include <stack>
 #include <climits>
-// #include <ext/pb_ds/assoc_container.hpp>
-// using namespace __gnu_pbds;
-// typedef tree<int, null_type, less_equal<int>, rb_tree_tag, tree_order_statistics_node_update>
-// ordered_multiset;
 
 typedef long long ll;
 ll mod = 1000000007;
@@ -524,33 +520,65 @@ ll coinChange(int coin, vector<int> coins, int i, vector<vector<int>> &dp)
 int main()
 {
 
-    // freopen("in.txt", "r", stdin);
-    // freopen("out.txt", "w", stdout);
-    int q;
-    cin >> q;
-    while (q--)
+    freopen("in.txt", "r", stdin);
+    freopen("out.txt", "w", stdout);
+    int t;
+    cin >> t;
+    while (t--)
     {
-        int n;
-        cin >> n;
-        vector<int> v(n);
-        bool okay = 1;
-        for (int i = 0; i < n; i++)
+        int n, m, qSize;
+        cin >> n >> m >> qSize;
+
+        vector<int> a(m);
+        vector<int> q(qSize);
+        vector<int> ans(m, 0);
+
+        for (int i = 0; i < m; i++)
         {
-            cin >> v[i];
-            if (i)
+            cin >> a[i];
+            a[i]--;
+        }
+        for (int i = 0; i < qSize; i++)
+        {
+            cin >> q[i];
+            q[i]--;
+        }
+
+        if (n - qSize > 1)
+        {
+            for (int i = 0; i < m; i++)
             {
-                if (abs(v[i] - v[i - 1]) == 5 || abs(v[i] - v[i - 1]) == 7)
-                {
-                }
-                else
-                    okay = 0;
+                ans[i] = 0;
             }
         }
-        if (okay)
-            cout << "yes";
+        else if (qSize == n)
+        {
+            for (int i = 0; i < m; i++)
+            {
+                ans[i] = 1;
+            }
+        }
+
         else
-            cout << "no";
+        {
+            for (int i = 0; i < m; i++)
+            {
+
+                {
+                    bool found = binary_search(q.begin(), q.end(), a[i]);
+                    if (found == 0)
+                    {
+                        ans[i] = 1;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < m; i++)
+        {
+            cout << ans[i];
+        }
         cout << endl;
     }
+
     return 0;
 }
