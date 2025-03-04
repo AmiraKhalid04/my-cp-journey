@@ -521,17 +521,68 @@ ll coinChange(int coin, vector<int> coins, int i, vector<vector<int>> &dp)
     }
     return dp[i][coin];
 }
-int main()
-{
-
-    freopen("in.txt", "r", stdin);
-    freopen("out.txt", "w", stdout);
-    // int q;
-    // cin >> q;
-    // while (q--)
-    {
-     cout<<"hi";
+int main() {
+    int n ;
+        cin>>n ;
+        vector<ll> a[n];
+        for(int i =0;i<n;i++ ) {
+          int sz ;
+            cin>>sz ;
+            for(int j =0;j<sz;j++ ) {
+                int c ;
+                cin>>c ;
+                a[i].push_back(c);
+            }
+        }
+        for(int i =0;i<n;i++ ) {
+            sort(a[i].begin(),a[i].end());
+        }
+        // for(int i =0;i<n;i++ ) {
+        //     for(int j =0;j<n;j++ ) {
+        //         cout<<a[i][j]<<" ";
+        //     }
+        //     cout<<endl;
+        // }
+        // cout<<"hey"<<endl;
+        vector<ll> sum[n];
+    
+        for (int i = 0; i < n; i++) {
+            sum[i].resize(a[i].size() + 1, 0);
+            for (int j = 0; j < a[i].size(); j++) {
+                sum[i][j + 1] = a[i][j] + sum[i][j];
+            }
+    
+        }
+    
+        // for (int i = 0; i < n; i++) {
+        //     for (int j = 0; j < sum[i].size(); j++) {
+        //         cout << sum[i][j] << " ";
+        //     }
+        //     cout << endl;
+        // }
+        // cout<<"hey"<<endl;
+        ll q ;
+        cin>>q;
+        for(int i =0;i<q;i++) {
+            int ques ;
+            cin>>ques ;
+            ll ans =0;
+            ll TT =LLONG_MAX;
+            for(int j =0;j<n;j++) {
+             // cout<<j<<endl ;
+                ll idx = lower_bound(a[j].begin(),a[j].end(),ques)-a[j].begin();
+               // cout<<idx<<"  idx "<<endl ;
+                ll  total = (sum[j][sum[j].size()-1]-sum[j][idx])-((a[j].size()-idx)*ques);
+               // cout<<(sum[j][sum[j].size()-1])<<endl;
+              //  cout<<total<<"  total"<<endl ;
+                total += (idx*ques)-sum[j][idx];
+                //cout<<total<<"  total"<<endl ;
+                if(total<TT) {
+                    TT = total;
+                    ans= j+1;
+                }
+            }
+            cout<<ans<<" ";
+        }
+    
     }
-
-    return 0;
-}
