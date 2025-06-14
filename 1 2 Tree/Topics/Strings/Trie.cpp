@@ -51,7 +51,7 @@ struct Trie
         }
         current->end++;
     }
-    int countStrings(string str )
+    int countStrings(string str)
     {
         Node *current = root;
         for (int i = 0; i < str.size(); i++)
@@ -59,15 +59,16 @@ struct Trie
             int idx = str[i] - 'a';
             if (current->children[idx] == nullptr)
             {
-               
+
                 return 0;
             }
             current = current->children[idx];
         }
-       return current->end;
+        return current->end;
     }
     int countPrefixes(string str)
-    { Node *current = root;
+    {
+        Node *current = root;
         for (int i = 0; i < str.size(); i++)
         {
             int idx = str[i] - 'a';
@@ -77,29 +78,35 @@ struct Trie
             }
             current = current->children[idx];
         }
-       return current->prefix;
-            
+        return current->prefix;
     }
 };
+void IOFilesOpen()
+{
 
+    freopen("in.txt", "r", stdin);
+    freopen("out.txt", "w", stdout);
+}
 
 int main()
 {
+    // IOFilesOpen();
     Trie trie;
-    trie.insert("hello");
-    trie.insert("hell");
-    trie.insert("heaven");
-    
-    cout << "Count of strings with prefix 'he': " << trie.countPrefixes("he") << endl; // Output: 3
-    cout << "Count of strings with prefix 'hell': " << trie.countPrefixes("hell") << endl; // Output: 2
-    cout << "Count of strings with prefix 'hello': " << trie.countPrefixes("hello") << endl; // Output: 1
-    cout << "Count of strings with prefix 'heaven': " << trie.countPrefixes("heaven") << endl; // Output: 1
-    cout << "Count of strings with prefix 'hi': " << trie.countPrefixes("hi") << endl; // Output: 0
-    
-    cout << "Count of exact string 'hello': " << trie.countStrings("hello") << endl; // Output: 1
-    cout << "Count of exact string 'hell': " << trie.countStrings("hell") << endl; // Output: 1
-    cout << "Count of exact string 'heaven': " << trie.countStrings("heaven") << endl; // Output: 1
-    cout << "Count of exact string 'hi': " << trie.countStrings("hi") << endl; // Output: 0
+    int q, n;
+    cin >> n >> q;
+    while (n--)
+    {
+        string str;
+        cin >> str;
+        trie.insert(str);
+    }
+
+    while (q--)
+    {
+        string str;
+        cin >> str;
+        cout << trie.countPrefixes(str) << endl;
+    }
 
     return 0;
 }
