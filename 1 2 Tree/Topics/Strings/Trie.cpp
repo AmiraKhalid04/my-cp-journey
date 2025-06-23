@@ -90,22 +90,33 @@ void IOFilesOpen()
 
 int main()
 {
-    // IOFilesOpen();
-    Trie trie;
+    IOFilesOpen();
     int q, n;
-    cin >> n >> q;
-    while (n--)
-    {
-        string str;
-        cin >> str;
-        trie.insert(str);
-    }
+    cin >> q;
+    int prefixCount = 0;
+    int stringCount = 0;
 
     while (q--)
     {
-        string str;
-        cin >> str;
-        cout << trie.countPrefixes(str) << endl;
+        cin >> n;
+        Trie trie;
+        while (n--)
+        {
+            string str;
+            cin >> str;
+            trie.insert(str);
+        }
+        prefixCount = trie.countPrefixes("911");
+        stringCount = trie.countStrings("911");
+        if (prefixCount != stringCount)
+        {
+            cout << "NO" << endl;
+            ;
+        }
+        else
+        {
+            cout << "YES" << endl;
+        }
     }
 
     return 0;
