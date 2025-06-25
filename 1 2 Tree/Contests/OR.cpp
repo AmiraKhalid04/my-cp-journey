@@ -529,7 +529,7 @@ void solve()
 
     int n;
     cin >> n;
-    int y;
+    ll y;
     cin >> y;
     vector<ll> vec(n);
     for (int i = 0; i < n; i++)
@@ -547,9 +547,9 @@ void solve()
 
     ll ans = 0;
 
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i <= 32; i++)
     {
-        if (y & int(pow(2, i)))
+        if (y & ll(pow(2, i)))
         {
             if (!(element & int(pow(2, i))))
                 ans += ll(pow(2, i));
@@ -557,7 +557,7 @@ void solve()
 
         else
         {
-            if ((element & int(pow(2, i))))
+            if ((element & ll(pow(2, i))))
             {
                 cout << -1 << endl;
 
@@ -570,7 +570,7 @@ void solve()
 
 int main()
 {
-    // IOFilesOpen();
+    IOFilesOpen();
     int q;
 
     cin >> q;
