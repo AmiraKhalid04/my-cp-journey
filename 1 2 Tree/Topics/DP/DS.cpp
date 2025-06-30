@@ -47,24 +47,7 @@ ll fastpow_nomod(ll b, ll p)
     }
     return res;
 }
-vector<ll> linearSieve(int n)
-{
-    vector<ll> primes;
-    vector<char> composite(n + 1, false);
-    composite[0] = composite[1] = true;
-    for (int i = 2; i <= n; i++)
-    {
-        if (!composite[i])
-            primes.push_back(i);
-        for (int j = 0; j < primes.size() && (i * primes[j]) <= n; j++)
-        {
-            composite[i * primes[j]] = true;
-            if (i % primes[j] == 0)
-                break;
-        }
-    }
-    return primes;
-}
+
 int gcd(int a, int b)
 {
     while (b)
@@ -524,9 +507,64 @@ void IOFilesOpen()
     freopen("in.txt", "r", stdin);
     freopen("out.txt", "w", stdout);
 }
+set<int> getFactors(int num, vector<int> &primes)
+{
+    set<int> factors;
+
+    factors.insert(num);
+
+    for (int i = 0; primes[i] * primes[i] <= num; i++)
+    {
+        int divisor = primes[i];
+
+        while (divisor != 0 && num % divisor == 0)
+        {
+            factors.insert(divisor);
+            factors.insert(num / divisor);
+            divisor *= divisor;
+        }
+    }
+    factors.insert(1);
+    return factors;
+}
+
+vector<int> linearSieve(int n)
+{
+    vector<int> primes;
+    vector<char> composite(n + 1, false);
+    composite[0] = composite[1] = true;
+    for (int i = 2; i <= n; i++)
+    {
+        if (!composite[i])
+            primes.push_back(i);
+        for (int j = 0; j < primes.size() && (i * primes[j]) <= n; j++)
+        {
+            composite[i * primes[j]] = true;
+            if (i % primes[j] == 0)
+                break;
+        }
+    }
+    return primes;
+}
+
+void getAllFactors(map<int, set<int>> &factors)
+{
+    vector<int> primes = linearSieve(1e5);
+    factors[1].insert(1);
+    for (int i = 2; i <= 1e5; i++)
+    {
+        factors[i] = getFactors(i, primes);
+    }
+}
 
 void solve()
 {
+
+    // factors code
+
+    map<int, set<int>> factors;
+    getAllFactors(factors);
+
     int q;
 
     int studentsNumber;
@@ -536,9 +574,9 @@ void solve()
 
     vector<int> studentGroup(studentsNumber + 1);
 
-    vector<int> groupMoney(1e5 + 1, 0);
+    vector<ll> groupMoney(1e5 + 1, 0);
 
-    vector<vector<pair<int, int>>> groups(1e5 + 1);
+    vector<vector<pair<int, ll>>> groups(1e5 + 1);
     cin >> q;
     int time = 0;
 
@@ -560,7 +598,7 @@ void solve()
         // give groups money y
         else if (queryNumber == 2)
         {
-            int x, y;
+            ll x, y;
             cin >> x >> y;
 
             // may be replaced for better memory
@@ -579,39 +617,59 @@ void solve()
 
             int groupOfStudent = studentGroup[student];
 
-            cout << "Group of student: " << groupOfStudent << endl;
+            // multiples code
+            ll totMoney = 0;
 
-            if (groups[groupOfStudent].size() == 0)
+            for (auto it = factors[groupOfStudent].begin(); it != factors[groupOfStudent].end(); it++)
             {
-                cout << 0 << endl;
-            }
-            else
-            {
-                for (pair<int, int> p : groups[groupOfStudent])
+                if (groups[*it].size())
+                    totMoney += groups[*it][groups[*it].size() - 1].second;
+
+                auto it2 = lower_bound(groups[*it].begin(), groups[*it].end(), std::make_pair(enterTime[student], 0ll));
+                if (it2 == groups[*it].begin() || groups[*it].size() == 0)
                 {
-                    cout << "time: " << p.first << " money: " << p.second << endl;
+                    continue;
                 }
-
-                ll totalMoney = groups[groupOfStudent][groups[groupOfStudent].size() - 1].second;
-                auto it = lower_bound(groups[groupOfStudent].begin(), groups[groupOfStudent].end(), std::make_pair(enterTime[student], 0));
-
-                it--;
+                it2--;
                 ll moneyBefore;
 
-                if (it < groups[groupOfStudent].begin())
+                if (it2 < groups[*it].begin())
                 {
                     moneyBefore = 0;
                 }
                 else
                 {
-                    moneyBefore = it->second;
+                    moneyBefore = it2->second;
                 }
 
-                int money = totalMoney - moneyBefore;
+                totMoney -= moneyBefore;
+            }
 
-                cout << "total money: " << totalMoney << endl;
-                cout << "money before: " << moneyBefore << endl;
-                cout << money << endl;
+            // if (groups[groupOfStudent].size() == 0)
+            // {
+            //     cout << 0 << endl;
+            // }
+            // else
+            {
+
+                // ll totalMoney = groups[groupOfStudent][groups[groupOfStudent].size() - 1].second;
+                // auto it = lower_bound(groups[groupOfStudent].begin(), groups[groupOfStudent].end(), std::make_pair(enterTime[student], 0));
+
+                // it--;
+                // ll moneyBefore;
+
+                // if (it < groups[groupOfStudent].begin())
+                // {
+                //     moneyBefore = 0;
+                // }
+                // else
+                // {
+                //     moneyBefore = it->second;
+                // }
+
+                // int money = totalMoney - moneyBefore;
+
+                cout << totMoney << endl;
             }
         }
     }
@@ -620,76 +678,6 @@ void solve()
 int main()
 {
     IOFilesOpen();
-    int q;
-
-    int studentsNumber;
-    cin >> studentsNumber;
-
-    vector<int> enterTime(studentsNumber + 1);
-
-    vector<int> studentGroup(studentsNumber + 1);
-
-    vector<int> groupMoney(100, 0);
-
-    vector<vector<pair<int, int>>> groups(100);
-    cin >> q;
-    int time = 0;
-
-    while (q--)
-    {
-        time++;
-        int queryNumber;
-        cin >> queryNumber;
-        // assign students to group
-        if (queryNumber == 1)
-        {
-            int student;
-            cin >> student;
-            int group;
-            cin >> group;
-            studentGroup[student] = group;
-            enterTime[student] = time;
-        }
-        // give groups money y
-        else if (queryNumber == 2)
-        {
-            int x, y;
-            cin >> x >> y;
-
-            groupMoney[x] += y;
-
-            // may be replaced for better memory
-            groups[x].push_back({time, groupMoney[x]});
-        }
-
-        else if (queryNumber == 3)
-        {
-            int student;
-            cin >> student;
-
-            int groupOfStudent = studentGroup[student];
-
-            ll totalMoney = groups[groupOfStudent][groups[groupOfStudent].size() - 1].second;
-            auto it = lower_bound(groups[groupOfStudent].begin(), groups[groupOfStudent].end(), std::make_pair(enterTime[student], 0));
-            if (it != groups[groupOfStudent].end())
-                it--;
-            ll moneyBefore;
-
-            if (it < groups[groupOfStudent].begin())
-            {
-                moneyBefore = 0;
-            }
-            else
-            {
-                moneyBefore = it->second;
-            }
-
-            int money = totalMoney - moneyBefore;
-
-            cout << "total money: " << totalMoney << endl;
-            cout << "money before: " << moneyBefore << endl;
-            cout << money << endl;
-        }
-    }
+    solve();
     return 0;
 }
