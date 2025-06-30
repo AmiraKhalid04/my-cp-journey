@@ -534,11 +534,11 @@ void solve()
         string s;
         cin >> s;
 
-        vector<ll> freq(1e6, 0);
+        vector<ll> freq(1e6 + 7, 0ll);
 
         string ans = "", additionString = "";
 
-        for (int i = 0; i < s.size(); i++)
+        for (ll i = 0; i < s.size(); i++)
         {
             if (s[i] == '1')
             {
@@ -552,12 +552,14 @@ void solve()
 
             else
             {
+                // if (i)
                 freq[i] = freq[i - 1];
+                // else
             }
         }
         ll carry = 0;
 
-        for (int i = s.size(); i >= 0; i--)
+        for (ll i = s.size() - 1; i >= 0; i--)
         {
             if (freq[i] % 2)
             {
@@ -567,15 +569,15 @@ void solve()
                 ans += '0';
 
             if (i)
-                freq[i - 1] += freq[i] / 2;
+                freq[i - 1] += (freq[i] >> 1);
 
             else
-                carry = freq[i] / 2;
+                carry = (freq[i] >> 1);
         }
 
         reverse(ans.begin(), ans.end());
 
-        while (carry > 1)
+        while (carry >= 1)
 
         {
 
@@ -586,8 +588,13 @@ void solve()
             else
                 additionString += '0';
 
-            carry /= 2;
+            carry /= 2ll;
         }
+
+        reverse(additionString.begin(), additionString.end());
+
+        cout
+            << additionString + ans << endl;
     }
 }
 int main()
