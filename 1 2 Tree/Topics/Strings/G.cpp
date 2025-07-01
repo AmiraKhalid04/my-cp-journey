@@ -533,8 +533,7 @@ void solve()
 
         string s;
         cin >> s;
-
-        vector<ll> freq(1e6 + 7, 0ll);
+        vector<ll> freq(s.size() + 1);
 
         string ans = "", additionString = "";
 
@@ -544,29 +543,30 @@ void solve()
             {
 
                 if (i)
-                    freq[i] += i + 1 + freq[i - 1];
+                    freq[i] = i + 1 + freq[i - 1];
 
                 else
-                    freq[i] += i + 1;
+                    freq[i] = i + 1;
             }
 
             else
             {
-                // if (i)
-                freq[i] = freq[i - 1];
-                // else
+                if (i)
+                    freq[i] = freq[i - 1];
+                else
+                    freq[i] = 0;
             }
         }
-        ll carry = 0;
+        int carry = 0;
 
-        for (ll i = s.size() - 1; i >= 0; i--)
+        for (int i = s.size() - 1; i >= 0; i--)
         {
             if (freq[i] % 2)
             {
-                ans += '1';
+                ans.push_back('1');
             }
             else
-                ans += '0';
+                ans.push_back('0');
 
             if (i)
                 freq[i - 1] += (freq[i] >> 1);
@@ -583,18 +583,24 @@ void solve()
 
             if (carry % 2)
 
-                additionString += '1';
+                additionString.push_back('1');
 
             else
-                additionString += '0';
+                additionString.push_back('0');
 
-            carry /= 2ll;
+            carry = carry >> 1;
         }
 
         reverse(additionString.begin(), additionString.end());
+        // ans += additionString;
+        // reverse(ans.begin(), ans.end());
+
+        ///
+
+        additionString += ans;
 
         cout
-            << additionString + ans << endl;
+            << additionString << endl;
     }
 }
 int main()
