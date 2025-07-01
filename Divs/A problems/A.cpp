@@ -490,13 +490,14 @@ void solve()
     {
         int n;
         cin >> n;
-        if (n % 2)
+
+        vector<int> freq(n, 0);
+        for (int i = 0; i < n; i++)
         {
-            cout << "alice" << endl;
-            continue;
+            freq[i % 4]++;
         }
 
-        if (n % 3 == 0 || ((n - 1) % 3) == 0)
+        if (freq[0] == freq[3] && (freq[1] == freq[2]))
             cout << "bob";
         else
             cout << "alice";
