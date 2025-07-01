@@ -437,48 +437,44 @@ void IOFilesOpen()
     freopen("in.txt", "r", stdin);
     freopen("out.txt", "w", stdout);
 }
-void topological(vector<vector<int>> &adj, int v)
-{
-    vector<bool> visited(v, false);
-    stack<int> stk;
-    for (int i = 0; i < v; i++)
-    {
-        if (visited[i] == false)
-        {
-            DFSrec(adj, i, visited, stk);
-        }
-    }
-}
-
-void DFSrec(vector<vector<int>> &adj, int u, vector<bool> &visited, stack<int> &stk)
+void DFSrec(vector<vector<pair<int, ll>>> &adj, int u, vector<bool> &visited, stack<int> &stk)
 {
     visited[u] = true;
     for (auto i : adj[u])
     {
-        if (visited[i] == false)
+        if (visited[i.first] == false)
         {
-            DFSrec(adj, i, visited, stk);
+            DFSrec(adj, i.first, visited, stk);
         }
     }
     stk.push(u);
 }
+void topological(vector<vector<pair<int, ll>>> &adj, stack<int> &stk, int v, int i)
+{
+    vector<bool> visited(v, false);
+    ;
 
-void shortestpath(vector<vector<int>> &adj, stack<int> &stk, int source)
+    DFSrec(adj, i, visited, stk);
+}
+
+vector<ll> shortestpath(vector<vector<pair<int, ll>>> &adj, stack<int> &stk, int source)
 {
     int v = adj.size();
-    vector<int> dist(v, INT_MAX);
+    vector<ll> dist(v, -1);
     dist[source] = 0;
 
     while (stk.empty() != true)
     {
         int u = stk.top();
         stk.pop();
+
         for (auto i : adj[u])
         {
-            if (dist[i] > dist[u] + weight(u, i))
-                dist[i] = dist[u] + weight(u, i);
+            if (dist[i.first] < dist[u] + i.second)
+                dist[i.first] = dist[u] + i.second;
         }
     }
+    return dist;
 }
 void solve()
 {
@@ -486,38 +482,51 @@ void solve()
 
     cin >> n >> e >> q;
 
-    vector<vector<pair<int, int>>> adj_list(n + 1);
-    vector<vector<pair<int, int>>> adj_list2(n + 1);
+    vector<vector<pair<int, ll>>> adj_list(n + 1);
+    vector<vector<pair<int, ll>>> adj_list2(n + 1);
 
     while (e--)
     {
-        int u, v, w;
+        int u, v;
+        ll w;
         cin >> u >> v >> w;
         adj_list[u].push_back({v, w});
 
         adj_list2[v].push_back({u, w});
     }
 
+    stack<int> nodeStack1;
+
+    topological(adj_list, nodeStack1, n, 1);
+
     // DAG on node 1
+    vector<ll> dist1 = shortestpath(adj_list, nodeStack1, 1);
+    stack<int> nodeStack2;
+
+    topological(adj_list2, nodeStack2, n, n);
 
     // DAG on node n
+    vector<ll> dist2 = shortestpath(adj_list2, nodeStack2, n);
 
     while (q--)
     {
         int node;
         cin >> node;
+
+        if (dist1[node] == -1 || dist2[node] == -1)
+            cout << -1 << endl;
+
+        else
+
+            cout << dist1[node] + dist2[node] << endl;
     }
 }
 
 int main()
 {
     IOFilesOpen();
-    int q;
-    cin >> q;
 
-    while (q--)
-    {
-        solve();
-    }
+    solve();
+
     return 0;
 }
