@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main # Adjust this to your default branch if needed
+
 permissions:
-  issue: write
-  content: read
+  issues: write # Required for creating issues
+  contents: read # Required for actions/checkout
+
 jobs:
   check-commit-message:
     runs-on: ubuntu-latest
@@ -39,7 +41,7 @@ jobs:
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Issue for commit ${commitSha.substring(0, 7)}: Unsolved Problem`,
+              title: `Issue for commit ${commitSha.substring(0, 7)}: Potential 'try' in commit message`,
               body: `A commit with the message "${commitMessage}" contains the word "try". Please review.\n\nCommit SHA: ${commitSha}`,
               labels: ['auto-generated', 'review']
             });
