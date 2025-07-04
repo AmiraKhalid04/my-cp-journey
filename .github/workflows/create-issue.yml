@@ -43,5 +43,5 @@ jobs:
               repo: context.repo.repo,
               title: `Issue for commit ${commitSha.substring(0, 7)}: Potential 'try' in commit message`,
               body: `A commit with the message "${commitMessage}" contains the word "try". Please review.\n\nCommit SHA: ${commitSha}`,
-              labels: ['auto-generated', 'review']
+              labels: ['auto-generated', 'bug']
             });
