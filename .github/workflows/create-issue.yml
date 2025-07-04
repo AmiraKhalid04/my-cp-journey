@@ -41,7 +41,7 @@ jobs:
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Issue for commit ${commitSha.substring(0, 7)}: Potential 'try' in commit message`,
+              title: `Issue for commit ${commitSha.substring(0, 7)}: Unsolved Problem`,
               body: `A commit with the message "${commitMessage}" contains the word "try". Please review.\n\nCommit SHA: ${commitSha}`,
               labels: ['auto-generated', 'bug']
             });
