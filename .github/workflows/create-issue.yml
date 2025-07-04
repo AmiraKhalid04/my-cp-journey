@@ -1,0 +1,43 @@
+name: Create Issue on Commit with 'try'
+
+on:
+  push:
+    branches:
+      - main # Adjust this to your default branch if needed
+
+jobs:
+  check-commit-message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Fetch the last two commits to get the latest commit message
+
+      - name: Check commit message for 'try'
+        id: check_commit
+        run: |
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          if [[ "$COMMIT_MESSAGE" =~ [Tt][Rr][Yy] ]]; then
+            echo "try_detected=true" >> $GITHUB_OUTPUT
+            echo "commit_message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
+            echo "commit_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          else
+            echo "try_detected=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Issue
+        if: steps.check_commit.outputs.try_detected == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const commitMessage = '${{ steps.check_commit.outputs.commit_message }}';
+            const commitSha = '${{ steps.check_commit.outputs.commit_sha }}';
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Issue for commit ${commitSha.substring(0, 7)}: Unsolved Problem`,
+              body: `A commit with the message "${commitMessage}" contains the word "try". Please review.\n\nCommit SHA: ${commitSha}`,
+              labels: ['auto-generated', 'review']
+            });
