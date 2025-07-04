@@ -6,7 +6,7 @@ on:
       - main # Adjust this to your default branch if needed
 
 permissions:
-  issues: write # Required for creating issues
+  issues: write # Required  access for creating issues
   contents: read # Required for actions/checkout
 
 jobs:
