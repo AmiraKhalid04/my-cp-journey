@@ -78,6 +78,11 @@ void init()
     parent.assign(N, -1);
 }
 
+void Dijkstra()
+{
+    // only for testing
+}
+
 void solve()
 {
     int n, edges;
