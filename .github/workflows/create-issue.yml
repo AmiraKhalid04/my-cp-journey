@@ -6,7 +6,7 @@ on:
       - main # Adjust this to your default branch if needed
 
 permissions:
-  issues: write # Required  access for creating issues
+  issues: write # Required for creating issues
   contents: read # Required for actions/checkout
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
         with:
           fetch-depth: 2 # Fetch the last two commits to get the latest commit message
 
-      - name: Check commit message for 'try'
+      - name: Check commit message for 'try' and extract URL
         id: check_commit
         run: |
           COMMIT_MESSAGE=$(git log -1 --pretty=%B)
@@ -26,6 +26,13 @@ jobs:
             echo "try_detected=true" >> $GITHUB_OUTPUT
             echo "commit_message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
             echo "commit_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+            # Extract the first URL from the commit message
+            URL=$(echo "$COMMIT_MESSAGE" | grep -oE 'https?://[^ ]+' | head -n 1)
+            if [ -n "$URL" ]; then
+              echo "problem_url=$URL" >> $GITHUB_OUTPUT
+            else
+              echo "problem_url=none" >> $GITHUB_OUTPUT
+            fi
           else
             echo "try_detected=false" >> $GITHUB_OUTPUT
           fi
@@ -38,10 +45,14 @@ jobs:
           script: |
             const commitMessage = '${{ steps.check_commit.outputs.commit_message }}';
             const commitSha = '${{ steps.check_commit.outputs.commit_sha }}';
+            const problemUrl = '${{ steps.check_commit.outputs.problem_url }}';
+            const issueBody = problemUrl !== 'none' 
+              ? `A commit with the message "${commitMessage}" contains the word "try". Please review.\n\n[Link to Problem](${problemUrl})\n\nCommit SHA: ${commitSha}`
+              : `A commit with the message "${commitMessage}" contains the word "try". Please review.\n\nNo problem link provided in commit message.\n\nCommit SHA: ${commitSha}`;
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Issue for commit ${commitSha.substring(0, 7)}: Unsolved Problem`,
-              body: `A commit with the message "${commitMessage}" contains the word "try". Please review.\n\nCommit SHA: ${commitSha}`,
+              title: `Link to Problem: Commit ${commitSha.substring(0, 7)} contains unsolved problem`,
+              body: issueBody,
               labels: ['auto-generated', 'bug']
             });
