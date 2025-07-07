@@ -231,6 +231,7 @@ void DFS(int root, vector<vector<int>> &adj_list, vector<bool> &vis, vector<bool
             ll markCount = 0;
             if (vis[adj_list[p][i]] == 0)
             {
+                parent[adj_list[p][i]] = p;
                 if (marked[adj_list[p][i]])
                 {
                     markCount++;
@@ -501,8 +502,6 @@ void solve()
 
         adj_list[u].push_back(v);
         adj_list[v].push_back(u);
-
-        parent[v] = u;
 
         if (mark == 2)
         {
