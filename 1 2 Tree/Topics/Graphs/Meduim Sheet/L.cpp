@@ -213,48 +213,48 @@ vector<int> manacher_odd(string s)
     }
     return vector<int>(begin(p) + 1, end(p) - 1);
 }
-vector<int> ans(2 * 1e5 + 9);
-void DFS(int root, vector<vector<int>> &adj_list, vector<bool> &vis,
-         vector<int> &values, set<int> &setValues, int n)
-{
-    stack<int> s;
-    s.push(root);
-    setValues.erase(values[s.top()]);
-    if (setValues.empty() == 0)
-        ans[root] = *setValues.begin();
+// vector<int> ans(2 * 1e5 + 9);
+// void DFS(int root, vector<vector<int>> &adj_list, vector<bool> &vis,
+//          vector<int> &values, set<int> &setValues, int n)
+// {
+//     stack<int> s;
+//     s.push(root);
+//     setValues.erase(values[s.top()]);
+//     if (setValues.empty() == 0)
+//         ans[root] = *setValues.begin();
 
-    else
-        ans[root] = n;
-    // cout << root << " ";
-    vis[root] = 1;
-    int p = root;
-    while (s.empty() == 0)
-    {
-        p = s.top();
-        bool f = 0;
-        for (int i = 0; i < adj_list[p].size(); i++)
-        {
-            if (vis[adj_list[p][i]] == 0)
-            {
-                f = 1;
-                vis[adj_list[p][i]] = 1;
-                s.push(adj_list[p][i]);
-                // cout << adj_list[p][i] << " ";
-                setValues.erase(values[s.top()]);
-                if (setValues.empty() == 0)
-                    ans[adj_list[p][i]] = *setValues.begin();
+//     else
+//         ans[root] = n;
+//     // cout << root << " ";
+//     vis[root] = 1;
+//     int p = root;
+//     while (s.empty() == 0)
+//     {
+//         p = s.top();
+//         bool f = 0;
+//         for (int i = 0; i < adj_list[p].size(); i++)
+//         {
+//             if (vis[adj_list[p][i]] == 0)
+//             {
+//                 f = 1;
+//                 vis[adj_list[p][i]] = 1;
+//                 s.push(adj_list[p][i]);
+//                 // cout << adj_list[p][i] << " ";
+//                 setValues.erase(values[s.top()]);
+//                 if (setValues.empty() == 0)
+//                     ans[adj_list[p][i]] = *setValues.begin();
 
-                else
-                    ans[adj_list[p][i]] = n;
-            }
-        }
-        if (!f)
-        {
-            setValues.insert(values[s.top()]);
-            s.pop();
-        }
-    }
-}
+//                 else
+//                     ans[adj_list[p][i]] = n;
+//             }
+//         }
+//         if (!f)
+//         {
+//             setValues.insert(values[s.top()]);
+//             s.pop();
+//         }
+//     }
+// }
 void BFS(int root, vector<vector<int>> &adj_list,
          vector<int> &vis, vector<int> &level)
 {
@@ -444,25 +444,33 @@ void IOFilesOpen()
     freopen("in.txt", "r", stdin);
     freopen("out.txt", "w", stdout);
 }
-void DFSrec(vector<vector<pair<int, ll>>> &adj, int u, vector<bool> &visited, stack<int> &stk)
+void DFSrec(vector<vector<int>> &adj, int u, vector<bool> &visited, stack<int> &stk, vector<int> &values, set<int> &setValues, int n, vector<int> &ans)
 {
     visited[u] = true;
+    stk.push(u);
+    setValues.erase(values[stk.top()]);
+    if (setValues.empty() == 0)
+        ans[u] = *setValues.begin();
+
+    else
+        ans[u] = n;
     for (auto i : adj[u])
     {
-        if (visited[i.first] == false)
+        if (visited[i] == false)
 
         {
-            DFSrec(adj, i.first, visited, stk);
+            DFSrec(adj, i, visited, stk, values, setValues, n, ans);
         }
     }
-    stk.push(u);
+
+    setValues.insert(values[stk.top()]);
 }
 void topological(vector<vector<pair<int, ll>>> &adj, stack<int> &stk, int v, int i)
 {
     vector<bool> visited(v, false);
     ;
 
-    DFSrec(adj, i, visited, stk);
+    // DFSrec(adj, i, visited, stk);
 }
 
 vector<ll> shortestpath(vector<vector<pair<int, ll>>> &adj, stack<int> &stk, int source)
@@ -491,8 +499,10 @@ void solve()
 
     vector<int> values(n + 1);
     vector<bool> vis(n + 1, 0);
+    vector<int> ans(n + 1);
 
-    set<int> setValues;
+    set<int>
+        setValues;
 
     for (int i = 1; i <= n; i++)
     {
@@ -514,7 +524,10 @@ void solve()
         adj_list[i].push_back(x);
     }
 
-    DFS(1, adj_list, vis, values, setValues, n);
+    // DFS(1, adj_list, vis, values, setValues, n);
+
+    stack<int> stk;
+    DFSrec(adj_list, 1, vis, stk, values, setValues, n, ans);
 
     for (int i = 1; i <= n; i++)
     {
