@@ -69,6 +69,8 @@ vector<ll> shortestpath(vector<vector<pair<int, ll>>> &adj, stack<int> &stk, int
 
 vector<ll> dp;
 ll ans = 0;
+
+//////////////////////////////////////Dijkstra///////////////////////////
 const int N = 1e6 + 10;
 vector<ll> dist;
 vector<ll> parent;
@@ -78,11 +80,60 @@ void init()
     parent.assign(N, -1);
 }
 
-void Dijkstra()
+void Dijkstra(vector<vector<pair<int, ll>>> &adj_list,
+              priority_queue<pair<ll, ll>, vector<pair<ll, ll>>, greater<pair<ll, ll>>> &pq, int src)
 {
     // only for testing
-}
+    pq.push({0, src});
+    vector<bool> vis(N, 0);
 
+    dist[src] = 0;
+
+    while (pq.empty() == 0)
+    {
+
+        int p = pq.top().second;
+        pq.pop();
+
+        if (vis[p])
+            continue;
+
+        vis[p] = 1;
+
+        for (int i = 0; i < adj_list[p].size(); i++)
+        {
+            int ch = adj_list[p][i].first;
+
+            ll w = adj_list[p][i].second;
+
+            if (dist[ch] > dist[p] + w)
+            {
+                parent[ch] = p;
+
+                dist[ch] = dist[p] + w;
+                pq.push({dist[ch], ch});
+            }
+        }
+    }
+}
+void printPath(int node)
+{
+    stack<int> stk;
+    stk.push(node);
+    while (parent[node] != -1)
+    {
+        stk.push(parent[node]);
+
+        node = parent[node];
+    }
+
+    while (!stk.empty())
+    {
+        cout << stk.top() + 1 << " ";
+
+        stk.pop();
+    }
+}
 void solve()
 {
     int n, edges;
@@ -106,9 +157,17 @@ void solve()
     int src = 0;
     priority_queue<pair<ll, ll>, vector<pair<ll, ll>>, greater<pair<ll, ll>>> pq;
 
-    dist[src] = 0;
-
     // call Dijkstra
+
+    Dijkstra(adj_list, pq, 0);
+
+    if (dist[n - 1] != LLONG_MAX)
+
+    {
+        printPath(n - 1);
+    }
+    else
+        cout << -1;
 }
 int main()
 {
@@ -117,11 +176,11 @@ int main()
 
     freopen("in.txt", "r", stdin);
     freopen("out.txt", "w", stdout);
-    int q;
-    cin >> q;
-    while (q--)
+    // int q;
+    // cin >> q;
+    // while (q--)
 
-        solve();
+    solve();
 
     return 0;
 }
