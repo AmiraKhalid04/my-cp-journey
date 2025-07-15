@@ -122,7 +122,8 @@ void solve()
 int main()
 {
     // Please revise data types and casting
-    IOFilesOpen();
+    //
+    // IOFilesOpen();
     int q;
     cin >> q;
     while (q--)
