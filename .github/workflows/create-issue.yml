@@ -1,4 +1,4 @@
-name: Create Issue on Commit with 'try'
+name: Manage Issues for Try and Solve Commits
 
 on:
   push:
@@ -6,11 +6,11 @@ on:
       - main # Adjust this to your default branch if needed
 
 permissions:
-  issues: write # Required for creating issues
+  issues: write # Required for creating and closing issues
   contents: read # Required for actions/checkout
 
 jobs:
-  check-commit-message:
+  manage-issues:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -18,27 +18,28 @@ jobs:
         with:
           fetch-depth: 2 # Fetch the last two commits to get the latest commit message
 
-      - name: Check commit message for 'try' and extract URL
+      - name: Check commit message for 'try' or 'solve' and extract URL
         id: check_commit
         run: |
           COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          URL=$(echo "$COMMIT_MESSAGE" | grep -oE 'https?://[^ ]+' | head -n 1)
+          if [ -n "$URL" ]; then
+            echo "problem_url=$URL" >> $GITHUB_OUTPUT
+          else
+            echo "problem_url=none" >> $GITHUB_OUTPUT
+          fi
           if [[ "$COMMIT_MESSAGE" =~ [Tt][Rr][Yy] ]]; then
-            echo "try_detected=true" >> $GITHUB_OUTPUT
+            echo "action=try" >> $GITHUB_OUTPUT
             echo "commit_message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
             echo "commit_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-            # Extract the first URL from the commit message
-            URL=$(echo "$COMMIT_MESSAGE" | grep -oE 'https?://[^ ]+' | head -n 1)
-            if [ -n "$URL" ]; then
-              echo "problem_url=$URL" >> $GITHUB_OUTPUT
-            else
-              echo "problem_url=none" >> $GITHUB_OUTPUT
-            fi
+          elif [[ "$COMMIT_MESSAGE" =~ [Ss][Oo][Ll][Vv][Ee] ]]; then
+            echo "action=solve" >> $GITHUB_OUTPUT
           else
-            echo "try_detected=false" >> $GITHUB_OUTPUT
+            echo "action=none" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create GitHub Issue
-        if: steps.check_commit.outputs.try_detected == 'true'
+      - name: Create GitHub Issue for 'try'
+        if: steps.check_commit.outputs.action == 'try' && steps.check_commit.outputs.problem_url != 'none'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -46,13 +47,33 @@ jobs:
             const commitMessage = '${{ steps.check_commit.outputs.commit_message }}';
             const commitSha = '${{ steps.check_commit.outputs.commit_sha }}';
             const problemUrl = '${{ steps.check_commit.outputs.problem_url }}';
-            const issueBody = problemUrl !== 'none' 
-              ? `A commit with the message "${commitMessage}" contains the word "try". Please review.\n\n[Link to Problem](${problemUrl})\n\nCommit SHA: ${commitSha}`
-              : `A commit with the message "${commitMessage}" contains the word "try". Please review.\n\nNo problem link provided in commit message.\n\nCommit SHA: ${commitSha}`;
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Link to Problem: Commit ${commitSha.substring(0, 7)} contains unsolved problem`,
-              body: issueBody,
-              labels: ['auto-generated', 'bug']
+              title: `Link to Problem: Commit ${commitSha.substring(0, 7)} contains 'try'`,
+              body: `A commit with the message "${commitMessage}" contains the word "try". Please review.\n\n[Link to Problem](${problemUrl})\n\nCommit SHA: ${commitSha}`,
+              labels: ['auto-generated', 'review']
             });
+
+      - name: Close GitHub Issue for 'solve'
+        if: steps.check_commit.outputs.action == 'solve' && steps.check_commit.outputs.problem_url != 'none'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const problemUrl = '${{ steps.check_commit.outputs.problem_url }}';
+            const query = `repo:${context.repo.owner}/${context.repo.repo} ${problemUrl} in:comments is:open is:issue`;
+            const issues = await github.rest.search.issuesAndPullRequests({
+              q: query,
+              per_page: 1
+            });
+            if (issues.data.items.length > 0) {
+              const issueNumber = issues.data.items[0].number;
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                state: 'closed',
+                body: issues.data.items[0].body + '\n\nClosed due to "solve" commit with matching problem URL: ' + problemUrl
+              });
+            }
