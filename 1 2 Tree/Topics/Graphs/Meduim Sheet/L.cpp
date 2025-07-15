@@ -444,10 +444,9 @@ void IOFilesOpen()
     freopen("in.txt", "r", stdin);
     freopen("out.txt", "w", stdout);
 }
-void DFSrec(vector<vector<int>> &adj, int u, vector<bool> &visited, stack<int> &stk, vector<int> &values, set<int> &setValues, int n, vector<int> &ans)
+void DFSrec(vector<vector<int>> &adj, int u, vector<bool> &visited, vector<int> &values, set<int> &setValues, int n, vector<int> &ans)
 {
     visited[u] = true;
-    // stk.push(u);
 
     bool found = false;
 
@@ -529,10 +528,7 @@ void solve()
         adj_list[i].push_back(x);
     }
 
-    // DFS(1, adj_list, vis, values, setValues, n);
-
-    stack<int> stk;
-    DFSrec(adj_list, 1, vis, stk, values, setValues, n, ans);
+    DFSrec(adj_list, 1, vis, values, setValues, n, ans);
 
     for (int i = 1; i <= n; i++)
     {
