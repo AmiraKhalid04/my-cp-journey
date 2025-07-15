@@ -58,7 +58,6 @@ jobs:
             const encodedCommitMessage = '${{ steps.check_commit.outputs.commit_message }}';
             const commitSha = '${{ steps.check_commit.outputs.commit_sha }}';
             const encodedUrl = '${{ steps.check_commit.outputs.problem_url }}';
-            // Decode URL-encoded values
             const problemUrl = decodeURIComponent(encodedUrl);
             const commitMessage = decodeURIComponent(encodedCommitMessage);
             await github.rest.issues.create({
@@ -77,20 +76,26 @@ jobs:
           script: |
             const encodedUrl = '${{ steps.check_commit.outputs.problem_url }}';
             const problemUrl = decodeURIComponent(encodedUrl);
-            // Escape special characters in URL for search query
-            const escapedUrl = problemUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const query = `repo:${context.repo.owner}/${context.repo.repo} ${escapedUrl} in:comments is:open is:issue`;
-            const issues = await github.rest.search.issuesAndPullRequests({
-              q: query,
-              per_page: 1
+            console.log(`Searching for issues with URL: ${problemUrl}`);
+            // Fetch all open issues and filter manually
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'auto-generated',
+              per_page: 100
             });
-            if (issues.data.items.length > 0) {
-              const issueNumber = issues.data.items[0].number;
+            const matchingIssue = issues.find(issue => issue.body.includes(problemUrl));
+            if (matchingIssue) {
+              console.log(`Found matching issue #${matchingIssue.number}`);
               await github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: issueNumber,
+                issue_number: matchingIssue.number,
                 state: 'closed',
-                body: issues.data.items[0].body + '\n\nClosed due to "solve" commit with matching problem URL: ' + problemUrl
+                body: matchingIssue.body + '\n\nClosed due to "solve" commit with matching problem URL: ' + problemUrl
               });
+              console.log(`Closed issue #${matchingIssue.number}`);
+            } else {
+              console.log('No matching issue found for URL: ' + problemUrl);
             }
