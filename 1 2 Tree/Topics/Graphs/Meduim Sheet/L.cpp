@@ -447,13 +447,17 @@ void IOFilesOpen()
 void DFSrec(vector<vector<int>> &adj, int u, vector<bool> &visited, stack<int> &stk, vector<int> &values, set<int> &setValues, int n, vector<int> &ans)
 {
     visited[u] = true;
-    stk.push(u);
-    setValues.erase(values[stk.top()]);
-    if (setValues.empty() == 0)
-        ans[u] = *setValues.begin();
+    // stk.push(u);
 
-    else
-        ans[u] = n;
+    bool found = false;
+
+    if (setValues.find(values[u]) != setValues.end())
+    {
+        found = true;
+        setValues.erase(values[u]);
+    }
+    ans[u] = *setValues.begin();
+
     for (auto i : adj[u])
     {
         if (visited[i] == false)
@@ -462,8 +466,8 @@ void DFSrec(vector<vector<int>> &adj, int u, vector<bool> &visited, stack<int> &
             DFSrec(adj, i, visited, stk, values, setValues, n, ans);
         }
     }
-
-    setValues.insert(values[stk.top()]);
+    if (found)
+        setValues.insert(values[u]);
 }
 void topological(vector<vector<pair<int, ll>>> &adj, stack<int> &stk, int v, int i)
 {
@@ -512,6 +516,7 @@ void solve()
 
         setValues.insert(i - 1);
     }
+    setValues.insert(n);
 
     vector<vector<int>> adj_list(n + 1);
 
