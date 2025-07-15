@@ -23,21 +23,31 @@ jobs:
         run: |
           COMMIT_MESSAGE=$(git log -1 --pretty=%B)
           URL=$(echo "$COMMIT_MESSAGE" | grep -oE 'https?://[^ ]+' | head -n 1)
+          COMMIT_SHA=$(git rev-parse HEAD)
+          # URL-encode the outputs to handle special characters
+          ENCODED_URL=$(printf '%s' "$URL" | jq -sRr @uri)
+          ENCODED_COMMIT_MESSAGE=$(printf '%s' "$COMMIT_MESSAGE" | jq -sRr @uri)
           if [ -n "$URL" ]; then
-            ENCODED_URL=$(echo "$URL" | base64 -w 0)
             echo "problem_url=$ENCODED_URL" >> $GITHUB_OUTPUT
           else
             echo "problem_url=none" >> $GITHUB_OUTPUT
           fi
+          echo "commit_message=$ENCODED_COMMIT_MESSAGE" >> $GITHUB_OUTPUT
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
           if [[ "$COMMIT_MESSAGE" =~ [Tt][Rr][Yy] ]]; then
             echo "action=try" >> $GITHUB_OUTPUT
-            echo "commit_message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
-            echo "commit_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
           elif [[ "$COMMIT_MESSAGE" =~ [Ss][Oo][Ll][Vv][Ee] ]]; then
             echo "action=solve" >> $GITHUB_OUTPUT
           else
             echo "action=none" >> $GITHUB_OUTPUT
           fi
+
+      - name: Debug outputs
+        run: |
+          echo "Action: ${{ steps.check_commit.outputs.action }}"
+          echo "Problem URL: ${{ steps.check_commit.outputs.problem_url }}"
+          echo "Commit Message: ${{ steps.check_commit.outputs.commit_message }}"
+          echo "Commit SHA: ${{ steps.check_commit.outputs.commit_sha }}"
 
       - name: Create GitHub Issue for 'try'
         if: steps.check_commit.outputs.action == 'try' && steps.check_commit.outputs.problem_url != 'none'
@@ -45,11 +55,42 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const commitMessage = '${{ steps.check_commit.outputs.commit_message }}';
+            const encodedCommitMessage = '${{ steps.check_commit.outputs.commit_message }}';
             const commitSha = '${{ steps.check_commit.outputs.commit_sha }}';
             const encodedUrl = '${{ steps.check_commit.outputs.problem_url }}';
-            const problemUrl = Buffer.from(encodedUrl, 'base64').toString('utf-8');
+            // Decode URL-encoded values
+            const problemUrl = decodeURIComponent(encodedUrl);
+            const commitMessage = decodeURIComponent(encodedCommitMessage);
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Link to Problem: Commit ${commitSha推理
+              title: `Link to Problem: Commit ${commitSha.substring(0, 7)} contains 'try'`,
+              body: `A commit with the message "${commitMessage}" contains the word "try". Please review.\n\n[Link to Problem](${problemUrl})\n\nCommit SHA: ${commitSha}`,
+              labels: ['auto-generated', 'review']
+            });
+
+      - name: Close GitHub Issue for 'solve'
+        if: steps.check_commit.outputs.action == 'solve' && steps.check_commit.outputs.problem_url != 'none'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const encodedUrl = '${{ steps.check_commit.outputs.problem_url }}';
+            const problemUrl = decodeURIComponent(encodedUrl);
+            // Escape special characters in URL for search query
+            const escapedUrl = problemUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const query = `repo:${context.repo.owner}/${context.repo.repo} ${escapedUrl} in:comments is:open is:issue`;
+            const issues = await github.rest.search.issuesAndPullRequests({
+              q: query,
+              per_page: 1
+            });
+            if (issues.data.items.length > 0) {
+              const issueNumber = issues.data.items[0].number;
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                state: 'closed',
+                body: issues.data.items[0].body + '\n\nClosed due to "solve" commit with matching problem URL: ' + problemUrl
+              });
+            }
