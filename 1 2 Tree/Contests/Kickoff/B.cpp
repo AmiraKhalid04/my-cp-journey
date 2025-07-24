@@ -12,7 +12,7 @@ void IOFilesOpen()
     freopen("in.txt", "r", stdin);
     freopen("out.txt", "w", stdout);
 }
-int gcd(int a, int b)
+ll gcd(ll a, ll b)
 {
     while (b)
     {
@@ -22,7 +22,7 @@ int gcd(int a, int b)
     return a;
 }
 
-int lcm(int a, int b)
+ll lcm(ll a, ll b)
 {
     return a / gcd(a, b) * b;
 }
@@ -51,28 +51,15 @@ void primeFactors(ll &n, vector<int> &f)
 void solve()
 {
     ll n, m;
-    cin >> n >> m;
-    ll fact = n * m;
-    vector<int> f;
-    primeFactors(fact, f);
-    map<int, int> mapo;
-    ll ans = 1;
-    for (int i = 0; i < f.size(); i++)
-        mapo[f[i]]++;
-
-    for (auto it = mapo.begin(); it != mapo.end(); it++)
-    {
-        if (it->second % 2)
-
-        {
-            ans *= it->first;
-        }
-    }
-    cout << ans << endl;
+    cin >> m >> n;
+    cout << (lcm(m, n) / m) * (lcm(m, n) / n) << endl;
 }
 
 int main()
 {
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
     IOFilesOpen();
 
     int t;
