@@ -76,7 +76,7 @@ void solve()
             k--;
         }
     }
-    if (k <= 0 || k > s.size())
+    if (k <= 0)
     {
         cout << -1 << endl;
         return;
@@ -88,17 +88,11 @@ void solve()
         {
             if (!split[i])
             {
-                if (s[i] == '0' && i != n - 1 && s[i + 1] != '0')
-                {
-                    continue;
-                }
-                else
-                {
-                    split[i] = 1;
-                    k--;
-                }
+
+                split[i] = 1;
+                k--;
             }
-            if (k <= 1)
+            if (k == 1)
                 break;
         }
     }
