@@ -90,8 +90,46 @@ vector<int> getFactors(const map<int, int> &primeFactors)
     }
     return factors;
 }
+bool DFSBipartite(int root, vector<vector<int>> &adj_list, vector<int> &vis, vector<int> &color)
+{
+    stack<int> s;
+    s.push(root);
+    // cout << root << " ";
+    vis[root] = 1;
+    int p = root;
+    while (s.empty() == 0)
+    {
+        p = s.top();
+        bool f = 0;
+        for (int i = 0; i < adj_list[p].size(); i++)
+        {
+            if (vis[adj_list[p][i]] == 0)
+            {
+                f = 1;
+                vis[adj_list[p][i]] = 1;
+                s.push(adj_list[p][i]);
+                // cout << adj_list[p][i] << " ";
+                color[adj_list[p][i]] = 3 - color[p];
+            }
+            else
+            {
+                if (color[adj_list[p][i]] == color[p])
+                {
+                    return 0;
+                }
+            }
+        }
+        if (!f)
+        {
+            s.pop();
+        }
+    }
+    return 1;
+}
 
-void solve()
+// after calling this, u will have a graph colored with 1 and 2
+// 1 is set A and 2 is set B
+void Bipartite()
 {
     primes = linearSieve(1e7 + 5);
     int t = 1;
@@ -103,71 +141,72 @@ void solve()
 
         vector<int> v(n);
 
-        set<int> setA;
-        set<int> setB;
-        bool groupA = 1;
-        bool groupB = 1;
-        vector<int> ans;
+        vector<vector<int>> adj_list(n + 1);
+        vector<int> vis(n + 1, 0);
+        vector<int> color(n + 1, 0);
+
+        bool isBarpartite = true;
+        vector<vector<int>> freq(1e7 + 1);
 
         for (int i = 0; i < n; i++)
         {
             cin >> v[i];
+            if (v[i] == 1)
+                color[i] = 1;
+            map<int, int> factors = getPrimeFactorization(v[i]);
+
+            for (auto it = factors.begin(); it != factors.end(); it++)
+            {
+                freq[it->first].push_back(i);
+            }
+        }
+
+        for (int i = 0; i < primes.size(); i++)
+        {
+            if (freq[primes[i]].size() > 2)
+            {
+                cout << -1;
+                return;
+            }
+            else if (freq[primes[i]].size() == 2)
+            {
+                for (int j = 0; j < 2; j++)
+                {
+                    adj_list[freq[primes[i]][j]].push_back(freq[primes[i]][1 - j]);
+                }
+            }
         }
         for (int i = 0; i < n; i++)
-        {
-            groupA = 1;
-            groupB = 1;
-            map<int, int> mapo = getPrimeFactorization(v[i]);
-
-            for (auto it = mapo.begin(); it != mapo.end(); it++)
+            if (vis[i] == 0)
             {
-                if (setA.find(it->first) != setA.end())
-                {
-                    groupA = 0;
 
-                    break;
-                }
-            }
-            if (groupA)
-            {
-                for (auto it = mapo.begin(); it != mapo.end(); it++)
+                if (!color[i])
                 {
-                    setA.insert(it->first);
-                }
-
-                ans.push_back(1);
-            }
-
-            else
-            {
-                for (auto it = mapo.begin(); it != mapo.end(); it++)
-                {
-                    if (setB.find(it->first) != setB.end())
+                    color[i] = 1;
+                    if (DFSBipartite(i, adj_list, vis, color) == 0)
                     {
-                        groupB = 0;
+                        isBarpartite = false;
                         break;
                     }
                 }
-
-                if (groupB)
-                {
-                    for (auto it = mapo.begin(); it != mapo.end(); it++)
-                    {
-                        setB.insert(it->first);
-                    }
-                    ans.push_back(2);
-                }
-                else
-                {
-                    cout << -1;
-                    return;
-                }
             }
-        }
+        // for (int i = 0; i < primes.size(); i++)
+        // {
+        //     if (freq[primes[i]].size() == 1)
+        //     {
+        //         color[freq[primes[i]][0]] = 1;
+        //     }
+        // }
 
-        for (int i = 0; i < n; i++)
+        if (isBarpartite)
+            for (int i = 0; i < n; i++)
+            {
+                cout << color[i] << " ";
+            }
+        else
         {
-            cout << ans[i] << " ";
+            cout << -1;
+            return;
         }
     }
 }
@@ -179,6 +218,6 @@ int main()
     cout.tie(0);
     IOFilesOpen();
 
-    solve();
+    Bipartite();
     return 0;
 }
