@@ -63,7 +63,7 @@ jobs:
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Link to Problem: Commit ${commitSha.substring(0, 7)} contains 'try'`,
+              title: `Link to Problem: Commit ${commitSha.substring(0, 7)} contains unsolved problem.`,
               body: `A commit with the message "${commitMessage}" contains unsolved problem. Please review.\n\n[Link to Problem](${problemUrl})\n\nCommit SHA: ${commitSha}`,
               labels: ['auto-generated', 'review']
             });
