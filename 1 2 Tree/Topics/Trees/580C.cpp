@@ -73,7 +73,7 @@ void DFSrec(vector<vector<int>> &adj, int u, vector<bool> &visited, vector<int> 
         }
     }
 
-    if (isLeaf[u] && cnt <= m)
+    if (adj[u].size() == 1 && u && cnt <= m)
     {
         ans++;
     }
