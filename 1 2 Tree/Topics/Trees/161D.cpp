@@ -52,8 +52,9 @@ void primeFactors(ll &n, vector<int> &f)
         f.push_back(n);
     }
 }
-int ans = 0;
-void DFSrec(vector<vector<int>> &adj, int u, vector<bool> &visited, vector<vector<int>> &dp, int k)
+
+void DFSrec(vector<vector<int>> &adj,
+            int u, vector<bool> &visited, vector<vector<int>> &dp, int k, ll &ans)
 {
     visited[u] = true;
     // count of vertices of distance zero from me
@@ -64,10 +65,10 @@ void DFSrec(vector<vector<int>> &adj, int u, vector<bool> &visited, vector<vecto
         if (visited[i] == false)
 
         {
-            DFSrec(adj, i, visited, dp, k);
+            DFSrec(adj, i, visited, dp, k, ans);
             for (int j = 0; j <= k; j++)
             {
-                ans += dp[u][j] * dp[i][k - j - 1];
+                ans += 1LL * dp[u][j] * dp[i][k - j - 1];
                 if (j)
                     dp[u][j] += dp[i][j - 1];
             }
@@ -84,6 +85,7 @@ void solve()
     vector<vector<int>>
         dp(n, vector<int>(k + 1, 0));
     int edges = n - 1;
+    ll ans = 0;
 
     while (edges--)
     {
@@ -94,8 +96,8 @@ void solve()
         adj_list[u].push_back(v);
         adj_list[v].push_back(u);
     }
-    DFSrec(adj_list, 0, visited, dp, k);
-    cout << ans << endl;
+    DFSrec(adj_list, 0, visited, dp, k, ans);
+    cout << ans << "\n";
     return;
 }
 
@@ -110,6 +112,5 @@ int main()
     // cin >> t;
     // while (t--)
 
-    solve();
-    return 0;
+    return solve(), 0;
 }
