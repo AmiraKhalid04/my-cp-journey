@@ -133,9 +133,9 @@ void solve()
                 }
             }
         }
-        if (res == -1)
-            noAns = 1;
         cout << res + 1 << " ";
+        if (res == -2)
+            noAns = 1;
     }
     cout << "\n";
 }
