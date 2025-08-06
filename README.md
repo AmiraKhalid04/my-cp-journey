@@ -1,7 +1,8 @@
-|                                                                                                                                                 |
-| :---------------------------------------------------------------------------------------------------------------------------------------------: |
-|                                                 <h1>My Competitive Programming Journey 🚀</h1>                                                  |
-| ![Lightning McQueen and Doc Hudson Speed Cars GIF](https://gifdb.com/images/high/lightning-mcqueen-doc-hudson-speed-cars-1adpw3haxlr8wwgr.webp) |
+<h1 align="center">My Competitive Programming Journey</h1>
+
+<div align="center">
+  <img src="https://gifdb.com/images/high/lightning-mcqueen-doc-hudson-speed-cars-1adpw3haxlr8wwgr.webp" width="600" height="300">
+</div>
 
 This repository is my personal log for tracking my progress in competitive programming, organizing coding problems from platforms like LeetCode, Codeforces, and others. Using a structured folder system 📁 and GitHub Issues 📋, I document my attempts and solutions to stay organized and monitor my growth.
 
