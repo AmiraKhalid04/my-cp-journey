@@ -25,9 +25,7 @@ This repository is primarily for my growth but welcomes anyone who wants to expl
 The repository is organized into two main folders to keep problems tidy:
 
 - **`solo/`** 🧑‍💻: My individual solutions to competitive programming problems, named using problem codes (e.g., `123A.cpp` for a Codeforces problem) and linked to sources via issues or commits.
-- **`teams/`** 👥: Collaborative solutions from coding contests or group practice, also using problem codes (e.g., `456B.cpp`).
-
-I use problem codes for file naming (e.g., `123A` for Codeforces, `1A` for AtCoder) to align with competition formats, and I add topic-based labels (e.g., `graph`, `dp`, `greedy`) to issues for better organization.
+- **`teams/`** 👥: Collaborative solutions from coding contests or group practice.
 
 ## Tracking Progress with Issues 📋
 
