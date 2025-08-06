@@ -11,18 +11,19 @@ This repository is my personal log for tracking my progress in competitive progr
 `my-cp-journey` is my personal space to:
 
 - **Track Progress** 📈: Log every step of my competitive programming journey, from initial attempts (`try`) to completed solutions (`solve`).
-- **Organize Problems** 🗂️: Categorize solutions into solo and team efforts, with clear links to problem sources.
 - **Learn and Improve** 🧠: Use GitHub Issues to flag problems for review or optimization, reflecting on my approaches.
 - **Share Knowledge** 🌍: Share my solutions and progress with others, inviting feedback or collaboration.
 
-This repository is primarily for my growth but welcomes anyone who wants to explore, learn from, or contribute to my competitive programming efforts! 😊
+This repository is primarily for my growth but welcomes anyone who wants to explore, learn from, or contribute to my competitive programming efforts!
 
 ## Repository Structure 📁
 
-**Note**: I am still modifying file names to improve navigation and make it easier to find specific problems. Updates are ongoing! 🔧  
-**Note**: Most of my work and sheet solving is currently under my favorite team folder, "1 2 Tree", where I focus my collaborative efforts and problem sets. 🌳
+> ⚠️ **NOTE**
+>
+> - I am still modifying file names to improve navigation and make it easier to find specific problems. Updates are ongoing! 🔧
+> - Most of my work and sheet solving is currently under my favorite team folder, **"1 2 Tree"**, where I focus my collaborative efforts and problem sets. 🌳
 
-The repository is organized into two main folders to keep problems tidy:
+The repository is organized into two main folders:
 
 - **`solo/`** 🧑‍💻: My individual solutions to competitive programming problems, named using problem codes (e.g., `123A.cpp` for a Codeforces problem) and linked to sources via issues or commits.
 - **`teams/`** 👥: Collaborative solutions from coding contests or group practice.
@@ -30,11 +31,6 @@ The repository is organized into two main folders to keep problems tidy:
 ## Tracking Progress with Issues 📋
 
 I use GitHub Issues to systematically track my progress, automated by a [GitHub Actions workflow](.github/workflows/issue-manager.yml) 🤖.
-
-### Closing Issues ✅
-
-- When I push a commit with "solve" and the same problem URL (e.g., `git commit -m "Solve problem https://codeforces.com/problemset/problem/123/A"`), the matching issue is closed.
-- The issue’s body is updated with: `Closed due to "solve" commit with matching problem URL: <URL>`.
 
 ### Organizing with Labels 🏷️
 
