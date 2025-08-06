@@ -444,103 +444,58 @@ void IOFilesOpen()
     freopen("in.txt", "r", stdin);
     freopen("out.txt", "w", stdout);
 }
-void DFSrec(vector<vector<int>> &adj, int u, vector<bool> &visited, vector<int> &values, set<int> &setValues, int n, vector<int> &ans)
-{
-    visited[u] = true;
 
-    bool found = false;
-
-    if (setValues.find(values[u]) != setValues.end())
-    {
-        found = true;
-        setValues.erase(values[u]);
-    }
-    ans[u] = *setValues.begin();
-
-    for (auto i : adj[u])
-    {
-        if (visited[i] == false)
-
-        {
-            DFSrec(adj, i, visited, stk, values, setValues, n, ans);
-        }
-    }
-    if (found)
-        setValues.insert(values[u]);
-}
-void topological(vector<vector<pair<int, ll>>> &adj, stack<int> &stk, int v, int i)
-{
-    vector<bool> visited(v, false);
-    ;
-
-    // DFSrec(adj, i, visited, stk);
-}
-
-vector<ll> shortestpath(vector<vector<pair<int, ll>>> &adj, stack<int> &stk, int source)
-{
-    int v = adj.size();
-    vector<ll> dist(v, LLONG_MAX);
-    dist[source] = 0;
-
-    while (stk.empty() != true)
-    {
-        int u = stk.top();
-        stk.pop();
-
-        for (auto i : adj[u])
-        {
-            if (dist[i.first] > dist[u] + i.second)
-                dist[i.first] = dist[u] + i.second;
-        }
-    }
-    return dist;
-}
 void solve()
 {
-    int n;
-    cin >> n;
+    int n, k;
+    cin >> n >> k;
+    k--;
 
-    vector<int> values(n + 1);
-    vector<bool> vis(n + 1, 0);
-    vector<int> ans(n + 1);
+    vector<ll> v(n);
 
-    set<int>
-        setValues;
-
-    for (int i = 1; i <= n; i++)
+    for (int i = 0; i < n; i++)
     {
-        int x;
-        cin >> x;
-        values[i] = x;
-
-        setValues.insert(i - 1);
+        cin >> v[i];
     }
-    setValues.insert(n);
+    ll el = v[k];
 
-    vector<vector<int>> adj_list(n + 1);
+    sort(v.begin(), v.end());
 
-    for (int i = 2; i <= n; i++)
+    ll water = 1;
+    int i = 0;
+
+    bool start = 0;
+    for (i = 0; i < n; i++)
     {
-        int x;
-        cin >> x;
 
-        adj_list[x].push_back(i);
-        adj_list[i].push_back(x);
+        if (start)
+        {
+            if (i != n - 1)
+            {
+
+                if (water + v[i] - el - 1ll <= el)
+                {
+                    water += v[i] - el;
+                    el = v[i];
+                }
+                else
+                {
+                    cout << "no" << endl;
+                    return;
+                }
+            }
+        }
+        if (v[i] == el)
+            start = 1;
     }
 
-    DFSrec(adj_list, 1, vis, values, setValues, n, ans);
-
-    for (int i = 1; i <= n; i++)
-    {
-        cout << ans[i] << " ";
-    }
+    cout << "yes";
 
     cout << endl;
 }
 int main()
 {
     IOFilesOpen();
-    // Try to solve using iterative DFS
     int q;
     cin >> q;
     while (q--)
