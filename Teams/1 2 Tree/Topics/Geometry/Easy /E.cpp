@@ -85,7 +85,7 @@ void solve()
     int n;
     cin >> n;
 
-    map<int, int> mapo;
+    map<int, ll> mapo;
 
     for (int i = 0; i < n; i++)
     {
@@ -93,12 +93,29 @@ void solve()
         cin >> x;
         mapo[x]++;
     }
-    ll ans = 1;
-    for (auto it = mapo.begin(); it != mapo.end(); it++)
+    ll ans = 0;
+
+    if (n < 4)
     {
-        ans *= it->second * (it->second - 1) / 2;
+        cout << 0;
+        return;
     }
 
+    vector<ll> el;
+    for (auto it = mapo.begin(); it != mapo.end(); it++)
+    {
+        el.push_back(it->second * (it->second - 1) / 2);
+    }
+    vector<ll> freq(el.size());
+    freq[0] = el[0];
+    for (int i = 1; i < el.size(); i++)
+    {
+        freq[i] = freq[i - 1] + el[i];
+    }
+    for (int i = 0; i < el.size(); i++)
+    {
+        ans += el[i] * (freq[el.size() - 1] - freq[i]);
+    }
     cout << ans;
 }
 
