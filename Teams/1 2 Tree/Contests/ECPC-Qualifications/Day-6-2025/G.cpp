@@ -111,57 +111,28 @@ void solve()
     int n;
     cin >> n;
 
-    set<vector<double>> ans;
+    set<vector<pair<int, int>>> ans;
 
     while (n--)
     {
-        double x1, y1, x2, y2, x3, y3;
 
-        cin >> x1 >> y1 >> x2 >> y2 >> x3 >> y3;
+        vector<pair<int, int>> points(3);
 
-        double dot1 = x1 * x2 + y1 * y2;
-        double dot2 = x1 * x3 + y1 * y3;
-        double dot3 = x3 * x2 + y3 * y2;
-
-        double mag1 = sqrt((x1 * x1 + y1 * y1)) * sqrt((x2 * x2 + y2 * y2));
-        double mag2 = sqrt((x1 * x1 + y1 * y1)) * sqrt((x3 * x3 + y3 * y3));
-        double mag3 = sqrt((x3 * x3 + y3 * y3)) * sqrt((x2 * x2 + y2 * y2));
-
-        // double ang1 = dot1 / mag1;
-        // double ang2 = dot2 / mag2;
-        // double ang3 = dot3 / mag3;
-
-        vector<double>
-            slopes(3);
-
-        if (mag1)
-            slopes[0] = dot1 / mag1;
-        else
+        for (int i = 0; i < 3; i++)
         {
-            slopes[0] = std::numeric_limits<double>::infinity();
+            cin >> points[i].first >> points[i].second;
         }
-        if (mag2)
-            slopes[1] = dot2 / mag2;
-        else
-        {
-            slopes[1] = std::numeric_limits<double>::infinity();
-        }
-        if (mag3)
-            slopes[2] = dot3 / mag3;
-        else
-        {
-            slopes[2] = std::numeric_limits<double>::infinity();
-        }
-        for (double &slope : slopes)
-        {
-            if (slope != std::numeric_limits<double>::infinity())
-            {
-                slope = std::round(slope * 1000000) / 1000000.0; // Round to 6 decimal places
-            }
-        }
-        sort(slopes.begin(), slopes.end());
 
-        ans.insert(slopes);
+        pair<int, int> p = points[0];
+        for (int i = 0; i < 3; i++)
+        {
+            points[i].first -= p
+                                   .first;
+            points[i].second -= p
+                                    .second;
+        }
+
+        ans.insert(points);
     }
 
     cout << ans.size();
