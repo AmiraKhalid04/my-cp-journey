@@ -19,3 +19,11 @@
 ### improved idea
 
 - Congrats! No need for improvements. IT IS ACCEPTED
+
+## Two Sets
+
+### init idea
+
+- All sums that equal = s/2 .. pick non pick technique
+
+- mod_inv trick instead of div by 2
