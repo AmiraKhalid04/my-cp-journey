@@ -47,9 +47,14 @@ void solve()
     int r = row.size();
     int c = col.size();
 
-    int rs = r == n ? r : 1e8;
-    int cs = c == m ? m : 1e8;
-    cout << r * c << " " << min({max(r, c), cs, rs});
+    // int rs = r == n ? r : 1e8;
+    // int cs = c == m ? m : 1e8;
+
+    if (r * c == n * m)
+        cout << r * c << " " << min({max(r, c), n, m});
+    else
+
+        cout << r * c << " " << max(r, c);
 }
 
 int main()
