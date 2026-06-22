@@ -374,17 +374,115 @@ void solveN()
     cout << first << " " << second << endl;
 }
 
+struct Point
+{
+    double x, y;
+};
+
+double distancePointToSegment(Point p, Point v, Point w)
+{
+    double l2 = pow(w.x - v.x, 2) + pow(w.y - v.y, 2);
+    if (l2 == 0.0) // v == w case
+        return hypot(p.x - v.x, p.y - v.y);
+
+    double t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+    t = std::max(0.0, std::min(1.0, t));
+
+    Point projection = {v.x + t * (w.x - v.x), v.y + t * (w.y - v.y)};
+    return hypot(p.x - projection.x, p.y - projection.y);
+}
+
+void solveF()
+{
+    int n;
+    cin >> n;
+
+    multiset<double> sets;
+    vector<pair<double, double>> v(n);
+    map<int, pair<double, double>> mapo;
+    for (int i = 0; i < n; i++)
+    {
+        cin >> v[i].first >> v[i].second;
+        mapo[i] = v[i];
+    }
+    double pegX, pegY;
+    cin >> pegX >> pegY;
+    for (int i = 0; i < n; i++)
+    {
+        double dist = (pegX - v[i].first) * (pegX - v[i].first) + (pegY - v[i].second) * (pegY - v[i].second);
+        double sqrtDist = sqrt(dist);
+
+        sets.insert(sqrtDist);
+
+        double lineDist = distancePointToSegment({pegX, pegY}, {v[i].first, v[i].second}, {v[(i + 1) % n].first, v[(i + 1) % n].second});
+
+        sets.insert(lineDist);
+    }
+
+    cout << fixed << setprecision(10) << *sets.begin() << endl;
+
+    int q;
+    cin >> q;
+    while (q--)
+    {
+        int ind;
+        cin >> ind;
+        ind--;
+
+        auto it = mapo.find(ind);
+
+        auto it2 = it;
+
+        auto it3 = it;
+
+        if (it != mapo.begin())
+        {
+            it2--;
+        }
+        else
+            it2 = prev(mapo.end());
+
+        double lineDist = distancePointToSegment({pegX, pegY}, {(it2->second).first, (it2->second).second}, {(it->second).first, (it->second).second});
+        sets.erase(lineDist);
+
+        if (it != prev(mapo.end()))
+        {
+
+            it3++;
+        }
+        else
+            it3 = mapo.begin();
+
+        double lineDist2 = distancePointToSegment({pegX, pegY}, {(it->second).first, (it->second).second}, {(it3->second).first, (it3->second).second});
+        sets.erase(lineDist2);
+
+        double dist = (pegX - v[ind].first) * (pegX - v[ind].first) + (pegY - v[ind].second) * (pegY - v[ind].second);
+        double sqrtDist = sqrt(dist);
+        sets.erase(sqrtDist);
+
+        double lineDist3 = distancePointToSegment({pegX, pegY}, {(it2->second).first, (it2->second).second}, {(it3->second).first, (it3->second).second});
+
+        sets.insert(lineDist3);
+
+        mapo.erase(ind);
+
+        cout << fixed << setprecision(10) << *sets.begin() << endl;
+    }
+}
+
 int main()
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     cout.tie(nullptr);
 
+    cout << distancePointToSegment({.5, .5}, {1, 1}, {-1, -1});
+
     io();
-    int q;
-    cin >> q;
-    while (q--)
-        solve2();
+    // int q;
+    // cin >> q;
+    // while (q--)
+    //     solveF();
 
     return 0;
 }
